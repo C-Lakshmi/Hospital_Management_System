@@ -34,8 +34,8 @@ Before you begin, ensure you have the following installed on your system:
 Clone the project repository from GitHub (or download it as a ZIP file):
 
 ```bash
-git clone https://github.com/yourusername/hospital-management-system.git
-cd hospital-management-system
+git clone https://github.com/C-Lakshmi/Hospital_Management_System
+cd Hospital-Management-System
 ```
 
 
@@ -63,20 +63,7 @@ pip install -r requirements.txt
 ```
 
 
-### Step 4: Set Up the Database
-
-Initialize the database by creating tables and adding default data:
-
-```bash
-python
-&gt;&gt;&gt; from app import db, app
-&gt;&gt;&gt; with app.app_context():
-...     db.create_all()
-...
-```
-
-
-### Step 5: Run the Application
+### Step 4: Run the Application
 
 Start the Flask development server:
 
