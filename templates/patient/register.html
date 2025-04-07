@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Register Patient - HMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Register New Patient</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="patient-form" enctype="multipart/form-data" >
+                    <div class="form-group">
+                        <label for="avatar">Patient Photo</label>
+                        <input type="file" class="form-control-file" id="avatar" name="avatar" accept="image/*">
+                        <small class="form-text text-muted">Upload a profile photo (optional)</small>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="name">Full Name</label>
+                            <input type="text" class="form-control" id="patient-name" name="name" required>
+                            <div class="invalid-feedback">
+                                Please enter patient's full name
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="age">Age</label>
+                            <input type="number" class="form-control" id="patient-age" name="age" min="0" max="150" required>
+                            <div class="invalid-feedback">
+                                Please enter a valid age
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="gender">Gender</label>
+                            <select class="form-control" id="gender" name="gender" required>
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select gender
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="contact">Contact Number</label>
+                            <input type="text" class="form-control" id="contact" name="contact" required>
+                            <div class="invalid-feedback">
+                                Please enter a contact number
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="address">Address</label>
+                            <input type="text" class="form-control" id="address" name="address" required>
+                            <div class="invalid-feedback">
+                                Please enter patient's address
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="diagnosis">Initial Diagnosis</label>
+                        <textarea class="form-control" id="diagnosis" name="diagnosis" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Register Patient</button>
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

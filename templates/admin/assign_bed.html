@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Assign Bed - HMS{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('manage_beds') }}">Bed Management</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Assign Bed</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Assign Bed #{{ bed.bed_number }} ({{ bed.ward }} Ward)</h4>
+            </div>
+            <div class="card-body">
+                {% if patients %}
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="patient_id">Select Patient</label>
+                        <select class="form-control" id="patient_id" name="patient_id" required>
+                            <option value="">Select Patient</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.name }} (ID: {{ patient.id }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Assign Bed</button>
+                    <a href="{{ url_for('manage_beds') }}" class="btn btn-secondary">Cancel</a>
+                </form>
+                {% else %}
+                <div class="alert alert-warning">
+                    <p>No patients available for bed assignment. All patients are already assigned to beds.</p>
+                </div>
+                <a href="{{ url_for('manage_beds') }}" class="btn btn-secondary">Back to Bed Management</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

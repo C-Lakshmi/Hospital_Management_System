@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Diagnostic Dashboard - HMS{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Diagnostic Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="dashboard-stats">
+            <h3>Tests</h3>
+            <h4>{{ tests|length }}</h4>
+            <p>Total diagnostic tests</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="dashboard-stats">
+            <h3>Pending</h3>
+            <h4>{{ pending_tests|length }}</h4>
+            <p>Tests awaiting results</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Recent Diagnostic Tests</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient</th>
+                                <th>Test Name</th>
+                                <th>Ordered Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for test in tests %}
+                            <tr>
+                                <td>{{ test.id }}</td>
+                                <td>{{ test.patient.name }}</td>
+                                <td>{{ test.test_name }}</td>
+                                <td>{{ test.test_date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    {% if test.status == 'pending' %}
+                                    <span class="badge badge-warning">Pending</span>
+                                    {% else %}
+                                    <span class="badge badge-success">Completed</span>
+                                    {% endif %}
+                                </td>
+                            
+                                    <td>
+                                        {% if test.status == 'pending' %}
+                                        <a href="{{ url_for('add_test_result', test_id=test.id) }}" class="btn btn-sm btn-primary">Add Results</a>
+                                        {% else %}
+                                        <a href="{{ url_for('view_test_result', test_id=test.id) }}" class="btn btn-sm btn-success">View Results</a>
+                                        <a href="{{ url_for('update_test_result', test_id=test.id) }}" class="btn btn-sm btn-warning">Update Results</a>
+                                        {% endif %}
+                                    </td>
+                                    
+                               
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">No diagnostic tests ordered yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

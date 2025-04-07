@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Pharmacy Dashboard - HMS{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Pharmacy Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="dashboard-stats">
+            <h3>Medications</h3>
+            <h4>{{ medications|length }}</h4>
+            <p>Total medications prescribed</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="dashboard-stats">
+            <h3>Pending</h3>
+            <h4>{{ pending_medications|length }}</h4>
+            <p>Medications to be dispensed</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Recent Prescriptions</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient</th>
+                                <th>Medication</th>
+                                <th>Dosage</th>
+                                <th>Prescribed Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for medication in medications %}
+                            <tr>
+                                <td>{{ medication.id }}</td>
+                                <td>{{ medication.patient.name }}</td>
+                                <td>{{ medication.name }}</td>
+                                <td>{{ medication.dosage }}</td>
+                                <td>{{ medication.prescribed_date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    {% if medication.status == 'pending' %}
+                                    <span class="badge badge-warning">Pending</span>
+                                    {% else %}
+                                    <span class="badge badge-success">Dispensed</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if medication.status == 'pending' %}
+                                    <a href="{{ url_for('dispense_medication', medication_id=medication.id) }}" class="btn btn-sm btn-success">Dispense</a>
+                                    {% else %}
+                                    <span class="text-muted">Dispensed on {{ medication.dispensed_date.strftime('%Y-%m-%d') }}</span>
+                                    {% endif %}
+                                    <a href="{{ url_for('medication_details', medication_id=medication.id) }}" class="btn btn-sm btn-info">Details</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center">No medications prescribed yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

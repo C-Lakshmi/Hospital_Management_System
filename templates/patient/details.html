@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+
+{% block title %}Patient Details - HMS{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% if current_user.role == 'admin' %}
+                <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                {% elif current_user.role == 'doctor' %}
+                <li class="breadcrumb-item"><a href="{{ url_for('doctor_dashboard') }}">Dashboard</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active" aria-current="page">Patient Details</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Patient Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    {% if patient.avatar %}
+                    <img src="{{ url_for('static', filename=patient.avatar) }}" alt="{{ patient.name }}'s Avatar" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='img/patient-avatar.png') }}" alt="Patient Avatar" class="img-fluid rounded-circle" style="width: 150px; height: 150px;">
+                    {% endif %}
+
+                    <h3 class="mt-3">{{ patient.name }}</h3>
+                    <p class="text-muted">Patient ID: {{ patient.id }}</p>
+                </div>
+                
+                <table class="table table-borderless">
+                    <tr>
+                        <th>Age:</th>
+                        <td>{{ patient.age }}</td>
+                    </tr>
+                    <tr>
+                        <th>Gender:</th>
+                        <td>{{ patient.gender }}</td>
+                    </tr>
+                    <tr>
+                        <th>Contact:</th>
+                        <td>{{ patient.contact }}</td>
+                    </tr>
+                    <tr>
+                        <th>Address:</th>
+                        <td>{{ patient.address }}</td>
+                    </tr>
+                    <tr>
+                        <th>Admission Date:</th>
+                        <td>{{ patient.admission_date.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                </table>
+                
+                {% if current_user.role == 'admin' or current_user.role == 'doctor' %}
+                <div class="mt-3">
+                    <a href="{{ url_for('edit_patient', patient_id=patient.id) }}" class="btn btn-warning btn-block">Edit Information</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Medical Information</h4>
+            </div>
+            <div class="card-body">
+                <h5>Diagnosis</h5>
+                <p>{{ patient.diagnosis or 'No diagnosis recorded.' }}</p>
+                
+                <hr>
+                
+                <h5>Assigned Doctor</h5>
+                {% if patient.doctor_id %}
+                <p>Dr. {{ doctor.username }}</p>
+                {% else %}
+                <p>No doctor assigned yet.</p>
+                {% if current_user.role == 'admin' %}
+                <a href="{{ url_for('assign_doctor', patient_id=patient.id) }}" class="btn btn-sm btn-primary">Assign Doctor</a>
+                {% endif %}
+                {% endif %}
+                
+                <hr>
+                
+                <h5>Bed Information</h5>
+                {% if bed %}
+                <p>
+                    <strong>Bed Number:</strong> {{ bed.bed_number }}<br>
+                    <strong>Ward:</strong> {{ bed.ward }}
+                </p>
+                {% else %}
+                <p>No bed assigned.</p>
+                {% if current_user.role == 'admin' %}
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Medications Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="mb-0">Medications</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if medications %}
+                        <ul class="list-group">
+                            {% for medication in medications %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">{{ medication.name }}</h6>
+                                        <small class="text-muted">{{ medication.dosage }}</small>
+                                    </div>
+                                    <a href="#" class="btn btn-sm btn-info">Details</a>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No medications prescribed yet.</p>
+                        {% endif %}
+        
+                        {% if current_user.role == 'doctor' %}
+                        <div class="mt-3 d-flex justify-content-center">
+                            <a href="{{ url_for('prescribe_medication', patient_id=patient.id) }}" class="btn btn-success col-md-4">
+                                Prescribe Medication
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+        
+                <!-- Medical Notes Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="mb-0">Medical Notes</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="medical-notes">
+                            {% if medical_notes %}
+                                {% for note in medical_notes %}
+                                <div class="medical-note mb-3 p-3 border rounded">
+                                    <div class="note-header d-flex justify-content-between">
+                                        <strong>Dr. {{ note.doctor.username }}</strong>
+                                        <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    </div>
+                                    <div class="note-content mt-2">
+                                        {{ note.content|nl2br }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>No medical notes recorded yet.</p>
+                            {% endif %}
+                        </div>
+        
+                        {% if current_user.role == 'doctor' and patient.doctor_id == current_user.id %}
+                        <form action="{{ url_for('add_medical_note', patient_id=patient.id) }}" method="POST">
+                            <div class="form-group">
+                                <label for="medical_note">Add Medical Note</label>
+                                <textarea class="form-control" id="medical_note" name="medical_note" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Note</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+        
+                <!-- Diagnostic Tests Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="mb-0">Diagnostic Tests</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if tests %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Test Name</th>
+                                        <th>Ordered Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for test in tests %}
+                                    <tr>
+                                        <td>{{ test.test_name }}</td>
+                                        <td>{{ test.test_date.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            {% if test.status == 'pending' %}
+                                            <span class="badge badge-warning">Pending</span>
+                                            {% else %}
+                                            <span class="badge badge-success">Completed</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if test.status == 'completed' %}
+                                            <a href="{{ url_for('view_test_result', test_id=test.id) }}" class="btn btn-sm btn-info">View Results</a>
+                                            {% else %}
+                                            <span class="text-muted">Awaiting results</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p>No diagnostic tests ordered yet.</p>
+                        {% endif %}
+        
+                        {% if current_user.role == 'doctor' and patient.doctor_id == current_user.id %}
+                        <div class="mt-3 d-flex justify-content-center">
+                            <a href="{{ url_for('order_test', patient_id=patient.id) }}" class="btn btn-success">
+                                Order New Test
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

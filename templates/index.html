@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Hospital Management System</h1>
+    <p class="lead">A comprehensive solution for hospital administration, patient management, and healthcare services.</p>
+    <hr class="my-4">
+    <p>Login to access the system features based on your role.</p>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Login</a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Patient Management</h5>
+                <p class="card-text">Register, update, and manage patient information.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Bed Management</h5>
+                <p class="card-text">Monitor and manage hospital bed availability.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Pharmacy & Diagnostics</h5>
+                <p class="card-text">Track medications and diagnostic tests.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

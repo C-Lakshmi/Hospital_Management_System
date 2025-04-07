@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Assign Doctor - HMS{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('patient_details', patient_id=patient.id) }}">Patient Details</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Assign Doctor</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Assign Doctor to {{ patient.name }}</h4>
+            </div>
+            <div class="card-body">
+                {% if doctors %}
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="doctor_id">Select Doctor</label>
+                        <select class="form-control" id="doctor_id" name="doctor_id" required>
+                            <option value="">Select Doctor</option>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}" {% if patient.doctor_id == doctor.id %}selected{% endif %}>
+                                {{ doctor.username }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Assign Doctor</button>
+                    <a href="{{ url_for('patient_details', patient_id=patient.id) }}" class="btn btn-secondary">Cancel</a>
+                </form>
+                {% else %}
+                <div class="alert alert-warning">
+                    <p>No doctors available in the system. Please add doctors first.</p>
+                </div>
+                <a href="{{ url_for('patient_details', patient_id=patient.id) }}" class="btn btn-secondary">Back to Patient Details</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

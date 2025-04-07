@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Results - HMS{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('diagnostic_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Test Results</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Results for {{ test.test_name }}</h4>
+            </div>
+            <div class="card-body">
+                <h5>Test Details</h5>
+                <table class="table">
+                    <tr>
+                        <th>Patient Name:</th>
+                        <td>{{ test.patient.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Test Name:</th>
+                        <td>{{ test.test_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ordered By:</th>
+                        <td>Dr. {{ test.doctor.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ordered Date:</th>
+                        <td>{{ test.test_date.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Result Date:</th>
+                        <td>{{ test.result_date.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                </table>
+                
+                <div class="mt-4">
+                    <h5>Test Results</h5>
+                    <div class="p-3 border rounded bg-light">
+                        {{ test.result|nl2br }}
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{{ url_for('diagnostic_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                    <a href="{{ url_for('patient_details', patient_id=test.patient_id) }}" class="btn btn-info">View Patient Details</a>
+                    <button class="btn btn-primary" onclick="window.print()">Print Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

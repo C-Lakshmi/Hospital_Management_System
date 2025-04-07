@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Bed Management - HMS{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Bed Management</h2>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Add New Bed</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="bed_number">Bed Number</label>
+                            <input type="text" class="form-control" id="bed_number" name="bed_number" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="ward">Ward</label>
+                            <select class="form-control" id="ward" name="ward" required>
+                                <option value="">Select Ward</option>
+                                <option value="General">General</option>
+                                <option value="ICU">ICU</option>
+                                <option value="Emergency">Emergency</option>
+                                <option value="Pediatric">Pediatric</option>
+                                <option value="Maternity">Maternity</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Bed</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="dashboard-stats">
+            <h3>Bed Status</h3>
+            <div class="row">
+                <div class="col-6">
+                    <h4 id="available-beds">{{ beds|selectattr('is_occupied', 'equalto', false)|list|length }}</h4>
+                    <p>Available</p>
+                </div>
+                <div class="col-6">
+                    <h4 id="total-beds">{{ beds|length }}</h4>
+                    <p>Total</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">All Beds</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Bed Number</th>
+                        <th>Ward</th>
+                        <th>Status</th>
+                        <th>Patient</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bed-list">
+                    {% for bed in beds %}
+                    <tr>
+                        <td>{{ bed.bed_number }}</td>
+                        <td>{{ bed.ward }}</td>
+                        <td>
+                            {% if bed.is_occupied %}
+                            <span class="text-danger">Occupied</span>
+                            {% else %}
+                            <span class="text-success">Available</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if bed.patient_id %}
+                            {{ bed.patient_id }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if bed.is_occupied %}
+                            <form action="{{ url_for('release_bed', bed_id=bed.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-warning">Release</button>
+                            </form>
+                            {% else %}
+                            <a href="{{ url_for('assign_bed', bed_id=bed.id) }}" class="btn btn-sm btn-primary">Assign</a>
+                            {% endif %}
+                            <form action="{{ url_for('delete_bed', bed_id=bed.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" {% if bed.is_occupied %}disabled{% endif %}>Delete</button>
+                            </form>
+                        </td>
+                        
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No beds added yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

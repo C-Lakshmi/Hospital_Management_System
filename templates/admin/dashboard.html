@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - HMS{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Admin Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="dashboard-stats">
+            <h3>Patients</h3>
+            <h4>{{ patients|length }}</h4>
+            <p>Total registered patients</p>
+            <a href="{{ url_for('register_patient') }}" class="btn btn-primary">Register New Patient</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="dashboard-stats" id="bed-availability">
+            <h3>Beds</h3>
+            <h4><span id="available-beds">{{ beds|selectattr('is_occupied', 'equalto', false)|list|length }}</span> / <span id="total-beds">{{ beds|length }}</span></h4>
+            <p>Available beds</p>
+            <a href="{{ url_for('manage_beds') }}" class="btn btn-primary">Manage Beds</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="dashboard-stats">
+            <h3>Staff</h3>
+            <h4>{{ users|default([])|length }}</h4>
+            <p>Total staff members</p>
+            <a href="{{ url_for('manage_staff') }}" class="btn btn-primary">Manage Staff</a>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Recent Patients</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Admission Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for patient in patients %}
+                            <tr>
+                                <td>{{ patient.id }}</td>
+                                <td>{{ patient.name }}</td>
+                                <td>{{ patient.age }}</td>
+                                <td>{{ patient.gender }}</td>
+                                <td>{{ patient.admission_date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <a href="{{ url_for('patient_details', patient_id=patient.id) }}" class="btn btn-sm btn-info">View</a>
+                                    <a href="{{ url_for('edit_patient', patient_id=patient.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">No patients registered yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Staff Overview</h4>
+                <a href="{{ url_for('manage_staff') }}" class="btn btn-sm btn-primary">View All Staff</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>
+                                    {% if user.role == 'admin' %}
+                                    <span class="badge badge-danger">Admin</span>
+                                    {% elif user.role == 'doctor' %}
+                                    <span class="badge badge-primary">Doctor</span>
+                                    {% elif user.role == 'pharmacy' %}
+                                    <span class="badge badge-success">Pharmacy</span>
+                                    {% elif user.role == 'diagnostic' %}
+                                    <span class="badge badge-warning">Diagnostic</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('manage_staff') }}" class="btn btn-sm btn-info">Manage</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center">No staff members found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Update bed availability on admin dashboard
+    function updateBedStatus() {
+        if ($('#bed-availability').length > 0) {
+            $.ajax({
+                url: '/api/beds',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('#available-beds').text(data.available);
+                    $('#total-beds').text(data.total);
+                }
+            });
+        }
+    }
+    
+    // Call initially and set interval
+    updateBedStatus();
+    setInterval(updateBedStatus, 30000);
+</script>
+{% endblock %}
+

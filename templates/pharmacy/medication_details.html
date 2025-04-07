@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Medication Details - HMS{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('pharmacy_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Medication Details</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Medication Details</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Medication Information</h5>
+                        <table class="table">
+                            <tr>
+                                <th>ID:</th>
+                                <td>{{ medication.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Name:</th>
+                                <td>{{ medication.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Dosage:</th>
+                                <td>{{ medication.dosage }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status:</th>
+                                <td>
+                                    {% if medication.status == 'pending' %}
+                                    <span class="badge badge-warning">Pending</span>
+                                    {% else %}
+                                    <span class="badge badge-success">Dispensed</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Prescribed Date:</th>
+                                <td>{{ medication.prescribed_date.strftime('%Y-%m-%d') }}</td>
+                            </tr>
+                            {% if medication.status == 'dispensed' %}
+                            <tr>
+                                <th>Dispensed Date:</th>
+                                <td>{{ medication.dispensed_date.strftime('%Y-%m-%d') }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Patient Information</h5>
+                        <table class="table">
+                            <tr>
+                                <th>Name:</th>
+                                <td>{{ medication.patient.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Age:</th>
+                                <td>{{ medication.patient.age }}</td>
+                            </tr>
+                            <tr>
+                                <th>Gender:</th>
+                                <td>{{ medication.patient.gender }}</td>
+                            </tr>
+                            <tr>
+                                <th>Contact:</th>
+                                <td>{{ medication.patient.contact }}</td>
+                            </tr>
+                        </table>
+                        <a href="{{ url_for('patient_details', patient_id=medication.patient.id) }}" class="btn btn-info">View Patient Details</a>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    {% if medication.status == 'pending' %}
+                    <a href="{{ url_for('dispense_medication', medication_id=medication.id) }}" class="btn btn-success">Dispense Medication</a>
+                    {% endif %}
+                    <a href="{{ url_for('pharmacy_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

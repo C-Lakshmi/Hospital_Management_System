@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Doctor Dashboard - HMS{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Doctor Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="dashboard-stats">
+            <h3>My Patients</h3>
+            <h4>{{ patients|length }}</h4>
+            <p>Patients under your care</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="dashboard-stats">
+            <h3>Appointments</h3>
+            <h4>{{ appointments|default(0) }}</h4>
+            <p>Scheduled appointments</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">My Patients</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Diagnosis</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for patient in patients %}
+                            <tr>
+                                <td>{{ patient.id }}</td>
+                                <td>{{ patient.name }}</td>
+                                <td>{{ patient.age }}</td>
+                                <td>{{ patient.gender }}</td>
+                                <td>{{ patient.diagnosis }}</td>
+                                <td>
+                                    <a href="{{ url_for('patient_details', patient_id=patient.id) }}" class="btn btn-sm btn-info">View Details</a>
+                                    <a href="{{ url_for('update_patient', patient_id=patient.id) }}" class="btn btn-sm btn-primary">Update</a>
+                                    <a href="{{ url_for('prescribe_medication', patient_id=patient.id) }}" class="btn btn-sm btn-success">Prescribe</a>
+                                </td>                                
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">No patients assigned yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

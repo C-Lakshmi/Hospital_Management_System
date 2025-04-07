@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block title %}Staff Management - HMS{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Staff Management</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>Staff Management</h2>
+    </div>
+    <div class="col-md-4 text-right">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addStaffModal">
+            <i class="fa fa-plus"></i> Add New Staff
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">Staff Members</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>
+                            {% if user.role == 'admin' %}
+                            <span class="badge badge-danger">Admin</span>
+                            {% elif user.role == 'doctor' %}
+                            <span class="badge badge-primary">Doctor</span>
+                            {% elif user.role == 'pharmacy' %}
+                            <span class="badge badge-success">Pharmacy</span>
+                            {% elif user.role == 'diagnostic' %}
+                            <span class="badge badge-warning">Diagnostic</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="badge badge-success">Active</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-warning edit-staff" data-id="{{ user.id }}" data-username="{{ user.username }}" data-role="{{ user.role }}" data-toggle="modal" data-target="#editStaffModal">
+                                Edit
+                            </button>
+                            {% if user.id != current_user.id %}
+                            <button class="btn btn-sm btn-danger delete-staff" data-id="{{ user.id }}">Delete</button>
+                            {% else %}
+                            <button class="btn btn-sm btn-danger" disabled title="You cannot delete your own account">Delete</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No staff members found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Staff Modal -->
+<div class="modal fade" id="addStaffModal" tabindex="-1" role="dialog" aria-labelledby="addStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStaffModalLabel">Add New Staff Member</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ url_for('add_staff') }}" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Role</label>
+                        <select class="form-control" id="role" name="role" required>
+                            <option value="">Select Role</option>
+                            <option value="admin">Admin</option>
+                            <option value="doctor">Doctor</option>
+                            <option value="pharmacy">Pharmacy</option>
+                            <option value="diagnostic">Diagnostic</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Staff</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Staff Modal -->
+<div class="modal fade" id="editStaffModal" tabindex="-1" role="dialog" aria-labelledby="editStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editStaffModalLabel">Edit Staff Member</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ url_for('edit_staff') }}" method="POST">
+                <input type="hidden" id="edit-staff-id" name="staff_id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="edit-username">Username</label>
+                        <input type="text" class="form-control" id="edit-username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-password">New Password (leave blank to keep current)</label>
+                        <input type="password" class="form-control" id="edit-password" name="password">
+                        <small class="form-text text-muted">Leave blank if you don't want to change the password</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-role">Role</label>
+                        <select class="form-control" id="edit-role" name="role" required>
+                            <option value="admin">Admin</option>
+                            <option value="doctor">Doctor</option>
+                            <option value="pharmacy">Pharmacy</option>
+                            <option value="diagnostic">Diagnostic</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Handle edit staff button click
+        $('.edit-staff').click(function() {
+            var staffId = $(this).data('id');
+            var username = $(this).data('username');
+            var role = $(this).data('role');
+            
+            // Populate the edit form
+            $('#edit-staff-id').val(staffId);
+            $('#edit-username').val(username);
+            $('#edit-role').val(role);
+        });
+        
+        // Handle delete staff button click
+        $('.delete-staff').click(function() {
+            var staffId = $(this).data('id');
+            if (confirm('Are you sure you want to delete this staff member?')) {
+                // Send delete request
+                $.ajax({
+                    url: '/staff/delete/' + staffId,
+                    type: 'POST',
+                    success: function(result) {
+                        // Reload page after successful deletion
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        alert('An error occurred while deleting the staff member: ' + error);
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

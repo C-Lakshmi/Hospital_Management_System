@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Diagnostic Test - HMS{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('doctor_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('patient_details', patient_id=patient.id) }}">Patient Details</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Order Test</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Order Diagnostic Test for {{ patient.name }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="test_name">Test Name</label>
+                        <select class="form-control" id="test_name" name="test_name" required>
+                            <option value="">Select Test</option>
+                            <option value="Complete Blood Count (CBC)">Complete Blood Count (CBC)</option>
+                            <option value="Blood Glucose Test">Blood Glucose Test</option>
+                            <option value="Liver Function Test">Liver Function Test</option>
+                            <option value="Kidney Function Test">Kidney Function Test</option>
+                            <option value="Lipid Profile">Lipid Profile</option>
+                            <option value="Thyroid Function Test">Thyroid Function Test</option>
+                            <option value="Electrocardiogram (ECG)">Electrocardiogram (ECG)</option>
+                            <option value="X-Ray">X-Ray</option>
+                            <option value="Ultrasound">Ultrasound</option>
+                            <option value="CT Scan">CT Scan</option>
+                            <option value="MRI">MRI</option>
+                        </select>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="test_description">Additional Instructions</label>
+                        <textarea class="form-control" id="test_description" name="test_description" rows="3" placeholder="Any specific instructions or details for the test"></textarea>
+                    </div>
+                    <div class="form-group mt-3">
+                        <button type="submit" class="btn btn-success">Order Test</button>
+                        <a href="{{ url_for('patient_details', patient_id=patient.id) }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
